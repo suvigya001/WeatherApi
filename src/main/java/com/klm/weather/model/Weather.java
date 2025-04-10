@@ -10,6 +10,9 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+
 @Data
 @Document(collection = "details")
 public class Weather {
@@ -19,14 +22,17 @@ public class Weather {
     
     @Indexed(unique = true)
     private Integer id;
-
+    @NotNull
     private Date date;
-
+    @NotNull
     private Float lat;
+    @NotNull
     private Float lon;
+    @NotBlank
     private String city;
+    @NotBlank
     private String state;
-
+    @NotNull
     private List<Double> temperatures;
 
     public Weather(Integer id, Date date, Float lat, Float lon, String city, String state, List<Double> temperatures) {

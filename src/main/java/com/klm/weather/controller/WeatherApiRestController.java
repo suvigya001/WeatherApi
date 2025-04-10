@@ -16,6 +16,8 @@ import com.klm.weather.repository.WeatherRepository;
 import com.klm.weather.service.SequenceGeneratorService;
 import com.mongodb.DuplicateKeyException;
 
+import jakarta.validation.Valid;
+
 @RestController
 @RequestMapping("/weather")
 public class WeatherApiRestController {
@@ -29,7 +31,7 @@ public class WeatherApiRestController {
     
     
     @PostMapping
-    public ResponseEntity<?> addDetail(@RequestBody Weather weather) {
+    public ResponseEntity<?> addDetail(@Valid @RequestBody Weather weather) {
     	try {
     		weather.setId(sequenceGeneratorService.generateSequence(SEQUENCE_NAME));
     		Weather savedDetail = weatherRepository.save(weather);
