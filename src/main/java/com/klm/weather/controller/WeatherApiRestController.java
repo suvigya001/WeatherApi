@@ -51,7 +51,7 @@ public class WeatherApiRestController {
     
     @GetMapping
     public List<Weather> getAllDetails(){
-    	return weatherRepository.findAll();
+    	return weatherRepository.findAllByOrderByIdAsc();
     }
     
     @GetMapping("/{id}")
