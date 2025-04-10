@@ -1,5 +1,6 @@
 package com.klm.weather.repository;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -12,4 +13,5 @@ import com.klm.weather.model.Weather;
 public interface WeatherRepository extends MongoRepository<Weather, String> {
 	Optional<Weather> findById(Integer id);
 	List<Weather> findAllByOrderByIdAsc();
+	List<Weather> findByDateBetween(Date startOfDay, Date endOfDay);
 }
