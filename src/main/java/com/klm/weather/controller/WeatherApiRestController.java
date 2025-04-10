@@ -90,9 +90,9 @@ public class WeatherApiRestController {
         Query query = new Query(criteria);
         
         if ("date".equalsIgnoreCase(sort)) {
-            query.with(Sort.by(Sort.Direction.ASC, "date"));
+            query.with(Sort.by(Sort.Order.asc("date"), Sort.Order.asc("id")));
         } else if ("-date".equalsIgnoreCase(sort)) {
-            query.with(Sort.by(Sort.Direction.DESC, "date"));
+            query.with(Sort.by(Sort.Order.desc("date"), Sort.Order.asc("id")));
         } else {
             query.with(Sort.by(Sort.Direction.ASC, "id"));
         }
