@@ -1,10 +1,13 @@
 package com.klm.weather.repository;
 
-import com.klm.weather.model.Weather;
-import org.springframework.data.jpa.repository.JpaRepository;
+import java.util.Optional;
+
+import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.stereotype.Repository;
 
-@Repository
-public interface WeatherRepository extends JpaRepository<Weather, Integer> {
+import com.klm.weather.model.Weather;
 
+@Repository
+public interface WeatherRepository extends MongoRepository<Weather, String> {
+	Optional<Weather> findById(Integer id);
 }

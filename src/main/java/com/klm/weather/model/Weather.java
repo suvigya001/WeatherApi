@@ -1,15 +1,23 @@
 package com.klm.weather.model;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
+
+import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
 
-@Entity
+import org.springframework.data.annotation.Id;
+import org.springframework.data.mongodb.core.index.Indexed;
+import org.springframework.data.mongodb.core.mapping.Document;
+
+@Data
+@Document(collection = "details")
 public class Weather {
 
     @Id
+    private String mongoId;
+    
+    @Indexed(unique = true)
     private Integer id;
 
     private Date date;
