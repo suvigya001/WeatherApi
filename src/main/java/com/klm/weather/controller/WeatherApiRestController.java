@@ -1,10 +1,16 @@
 package com.klm.weather.controller;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.mongodb.core.MongoTemplate;
+import org.springframework.data.mongodb.core.query.Criteria;
+import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -28,6 +34,10 @@ import jakarta.validation.Valid;
 public class WeatherApiRestController {
 
 	private static final String SEQUENCE_NAME = "id_sequence";
+	
+	@Autowired
+	private MongoTemplate mongoTemplate;
+	
 	@Autowired
 	private WeatherRepository weatherRepository;
 	
@@ -54,14 +64,40 @@ public class WeatherApiRestController {
     
     @GetMapping
     public List<Weather> getAllDetails(@RequestParam(required = false)
-    						@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date){
-    	if(date !=null) {
-    		return weatherRepository.findByDateBetween(
-                    getStartOfDay(date),
-                    getEndOfDay(date));
-    	}else {
-    		return weatherRepository.findAllByOrderByIdAsc();
-    	}
+    						@DateTimeFormat(iso = DateTimeFormat.ISO.DATE) Date date,
+    						@RequestParam(required = false) String city,
+    						@RequestParam(required = false) String sort){
+    	Criteria criteria = new Criteria();
+        List<Criteria> andCriteria = new ArrayList<>();
+        if (city != null && !city.isBlank()) {
+            String[] cities = city.split(",");
+            List<String> cityList = Arrays.stream(cities)
+                    .map(String::trim)
+                    .filter(s -> !s.isEmpty())
+                    .toList();
+            andCriteria.add(Criteria.where("city").in(cityList));
+        }
+
+        if (date != null) {
+            Date start = getStartOfDay(date);
+            Date end = getEndOfDay(date);
+            andCriteria.add(Criteria.where("date").gte(start).lte(end));
+        }
+
+        if (!andCriteria.isEmpty()) {
+            criteria = new Criteria().andOperator(andCriteria.toArray(new Criteria[0]));
+        }
+        Query query = new Query(criteria);
+        
+        if ("date".equalsIgnoreCase(sort)) {
+            query.with(Sort.by(Sort.Direction.ASC, "date"));
+        } else if ("-date".equalsIgnoreCase(sort)) {
+            query.with(Sort.by(Sort.Direction.DESC, "date"));
+        } else {
+            query.with(Sort.by(Sort.Direction.ASC, "id"));
+        }
+
+        return mongoTemplate.find(query, Weather.class);
     }
 
 	@GetMapping("/{id}")
